@@ -1,0 +1,8 @@
+logfacility local0
+bcast eth1 # Linux
+mcast eth1 225.0.0.1 694 1 0
+auto_failback off
+node loadbalancer1
+node loadbalancer2
+respawn hacluster /usr/lib/heartbeat/ipfail
+apiauth ipfail gid=haclient uid=hacluster

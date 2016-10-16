@@ -1,0 +1,21 @@
+virtual=192.168.6.240:80
+        fallback=127.0.0.1:80
+        real=192.168.1.2:80 masq
+        real=192.168.1.3:80 masq
+        service=http
+        request="Welcome to nginx!"
+        receive="Test Page"
+        scheduler=wrr
+        protocol=tcp
+        checktype=negotiate
+
+virtual=192.168.6.240:443
+        fallback=127.0.0.1:443
+        real=192.168.1.2:443 masq
+        real=192.168.1.3:443 masq
+        service=https
+        request="index.html"
+        receive="Welcome to nginx!"
+        scheduler=wlc
+        protocol=tcp
+        checktype=negotiate

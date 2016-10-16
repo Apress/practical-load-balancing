@@ -1,0 +1,442 @@
+
+# Authenticating with Your API Key
+
+<?php
+  require('cloudfiles.php');
+  
+  # First, create the authentication instance providing our username and API Key
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  
+  # Perform the authentication request by calling the authenticate() function 
+  # on our instance previously created
+  $auth->authenticate();
+?>
+
+
+<?php
+  require('cloudfiles.php');
+  
+  # First, create the authentication instance providing our username and API Key
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  
+  # Perform the authentication request by calling the authenticate() function 
+  # on our instance previously created
+  $auth->authenticate();
+  
+  # Confirm we’ve successfully authenticated
+  $status = $auth->authenticated();
+  print $status;
+?>
+
+
+# Connecting and Disconnecting
+
+<?php
+  require('cloudfiles.php');
+  
+  # First, create the authentication instance providing our username and API Key
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  
+  # Perform the authentication request by calling the authenticate() function 
+  # on our instance previously created
+  $auth->authenticate();
+
+  # Establish the connection instance 
+  $conn = new CF_Connection($auth);
+?> 
+
+# Listing the Containers
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  
+  # Create an array containing the names of our containers found
+  $containers = $conn->list_containers();
+  
+  # Print the array using print_r
+  print_r($containers);
+  
+  $conn->close();
+?>
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  
+  # Create an array containing the names of our containers 
+  # found, including its details (size, total number of items)
+  $containers_info = $conn->list_containers_info();
+  
+  # Print the array using print_r
+  print_r($containers_info);
+  
+  $conn->close();
+?>
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  
+  # Create an array containing the names of our containers 
+  # that are now, or were previously, made publicly available
+  $public_containers = $conn->list_public_containers();
+  
+  # Print the array using print_r
+  print_r($public_containers);
+  
+  $conn->close();
+?>
+
+# Creating and Deleting Containers
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  
+  # Create a new container named "Images" 
+  $conn->create_container("Images");
+  
+  $conn->close();
+?>
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  
+  # Delete the (empty) container named "Images" 
+  $result = $conn->delete_container("AwesomeApp");
+  print $result;
+  
+  $conn->close();
+?>
+
+# Using a Container
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  
+  # Create an instance for our Images container, named $container
+  $container = $conn->get_container("Images");
+
+  $conn->close();
+?>
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  
+  # Create an array of container instances, named $containers, limit to 2 results
+  $containers = $conn->get_containers(2);
+  # Print the array's details in a decent way
+  foreach ($containers as $contdetails) {
+    echo "Container name:" . $contdetails->name . "\n";
+    echo "Objects:" . $contdetails->count . "\n";
+    echo "Bytes stored:" . $contdetails->bytes . "\n";
+  }
+  
+  $conn->close();
+?>
+
+# Modifying Container Settings
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  
+  # Create an instance for the Images container, named $container
+  $container = $conn->get_container("Images");
+    
+  # Privatize this container
+  $container->make_private();
+ 
+  $conn->close();
+?>
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  
+  # Create an instance for the Images container, named $container
+  $container = $conn->get_container("Images");
+    
+  # Publish this container on the CDN, with a TTL of 30 days (1 day * 30)
+  $url = $container->make_public(86400 * 30);
+  
+  # Print the public URL
+  print $url;
+ 
+  $conn->close();
+?>
+
+# Listing Your Files
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  $container = $conn->get_container("Images");
+  
+  # List all the files within the Images container
+  $files = $container->list_objects();
+  
+  # List only the first 5 files within the Images container
+  $files = $container->list_objects(5);
+  
+  # List only 10 files within the Images container, but skip the first 10 files found
+  $files = $container->list_objects(10,10);
+  
+  # List all the files found within the container that start with "IMG_"
+  $files = $container->list_objects(0,NULL,"IMG_");
+  
+  # List the first 10 files found within the Images container
+  # HongKong/Day1 pseudo directory
+  $files = $container->list_objects(10,NULL,NULL,"HongKong/Day1");
+
+  # Output the array
+  print_r($files);
+  
+  $conn->close();
+?>
+
+# Using Your Files
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  $container = $conn->get_container("Images");
+  
+  # Create an object instance for one of the files in the Images container:
+  $file = $container->get_object("IMG_1234.JPG");
+ 
+  $conn->close();
+?>
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  $container = $conn->get_container("Images");
+  
+  # Create an object instance for all files in the Images container:
+  $files = $container->get_objects();
+ 
+  # Create an object instance for only the first 10 files found in the Images container:
+  $files = $container->get_objects(10);
+  
+  # Create an object instance for only the first 5 files found, skipping the first 10 items:
+  $files = $container->get_objects(5,10);
+  
+  # Create an object instance of all files starting with "IMG_"
+  $files = $container->get_objects(0,NULL,"IMG_");
+  
+  # Create an object instance of the first 8 files found after skipping 16,
+  # located in the Images container's HongKong/Day1 pseudo directory
+  $files = $container->get_objects(8,16,NULL,"HongKong/Day1");
+  
+  $conn->close();
+?>
+
+# Getting the Public URI
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  $container = $conn->get_container("Images");
+  $file = $container->get_object("IMG_1234.JPG");
+  
+  # Retrieve the URI from the file, and display the file in the browser
+  $uri = $file->public_uri();
+  print "<img src='$uri' />";
+  
+  $conn->close();
+?>
+
+# Uploading and Removing Files
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+
+  # Store information based on the uploaded data using the form
+  $filename = $_FILES['fileupload']['name'];
+  $localfile = $_FILES['fileupload']['tmp_name'];
+
+  # Create an instance for the container where we wish to upload the file to
+  $container = $conn->get_container("Images");
+  
+  # Create a new object with $filename as its name. Return an instance for it ($upload)
+  $upload = $container->create_object($filename);
+  
+  # Upload the file to the container
+  $upload->load_from_filename($localfile) 
+  $conn->close();
+?>
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  $container = $conn->get_container("Images");
+   
+  # Delete an object from the Images container
+  $container->delete_object("IMG_1234.JPG");
+ 
+  $conn->close();
+?>
+
+# Downloading Files
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  $container = $conn->get_container("Images");
+  
+  # Create an object instance for one of the files in the Images container:
+  $file = $container->get_object("IMG_1234.JPG");
+ 
+  $conn->close();
+?>
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  $container = $conn->get_container("Images");
+  
+  # Create an object instance for one of the files in the Images container:
+  $file = $container->get_object("IMG_1234.JPG");
+ 
+  # Save this file locally on the hard drive
+  $file->save_to_filename("/var/www/IMG_1234.JPG");
+
+  $conn->close();
+?>
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  $container = $conn->get_container("Images");
+  
+  # Create an object instance for one of the files in the Images container:
+  $file = $container->get_object("IMG_1234.JPG");
+
+  # Figure out the content-type using content_type, and use it to set the header of this page
+  header("Content-Type: " . $file->content_type);
+
+  # Read the file, and feed its contents to the browser. After that, print it:
+  $data = $file->read();
+  print $data;
+
+  $conn->close();
+?> 
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  $container = $conn->get_container("Images");
+  
+  # Create an object instance for one of the files in the Images container:
+  $file = $container->get_object("IMG_1234.JPG");
+ 
+  # Figure out the content-type using content_type, and use it to set the header of this page
+  header("Content-Type: " . $file->content_type);
+
+  # Star streaming the output to the browser   
+  $output = fopen("php://output", "w");
+  $file->stream($output);
+  fclose($output);
+
+  $conn->close();
+?> 
+
+# Other Useful Functions
+
+<?php
+  require('cloudfiles.php');
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  $container = $conn->get_container("Images");
+  
+  # Create a variable for one of the files in the Images container:  
+  $file = "Holidays/2011/HongKong/Day1/Resized/Small/IMG_1234.JPG";
+  
+  # Use the create_paths function to create pseudo-directories
+  $container->create_paths($file);
+ 
+  $conn->close();
+?>
+
+<?php
+  include cloudfiles.php;
+  
+  $auth = new CF_Authentication("loadbalancer", "12345");
+  $auth->authenticate();
+  $conn = new CF_Connection($auth);
+  
+  # Create an array storing your account's information
+  list($containers, $size) = $conn->get_info();
+  
+  # Output the results in a pretty way
+  print "Containers: " . $containers . "\n";
+  print "Total bytes: " . $size . "\n";
+  
+  $conn->close();
+?>
+

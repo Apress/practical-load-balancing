@@ -1,0 +1,14 @@
+zone "." {
+        type hint;
+        file "/etc/bind/db.root";
+};
+
+zone "localhost" {
+        type master;
+        file "/etc/bind/db.local";
+};
+
+zone "example.com " {
+        type master;
+        file "/etc/bind/db.example.com";
+};
